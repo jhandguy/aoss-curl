@@ -109,9 +109,9 @@ dependencies = [
 
 [[package]]
 name = "aws-mfa"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9c511088e45040cdfd0166b1e6997c3bca2c2e37c5df510785f9674d02ddceb"
+checksum = "e7da80821fb1f34584a1ce49744ffdabc71dec45eaf4534d0bb2a3b99505c2b4"
 dependencies = [
  "anyhow",
  "aws-config",
