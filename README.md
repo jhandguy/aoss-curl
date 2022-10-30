@@ -41,7 +41,7 @@ or downloaded as binary from the [releases page](https://github.com/jhandguy/aos
 
 ## Usage
 
-> **Important**: aoss-curl requires an MFA code and uses [aws-mfa](https://github.com/jhandguy/aws-mfa) for authenticating to AWS.
+> **Warning**: aoss-curl requires an MFA code and uses [aws-mfa](https://github.com/jhandguy/aws-mfa) for authenticating to AWS.
 
 Add basic credentials in `~/.aws/credentials`:
 
