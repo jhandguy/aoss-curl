@@ -1,2 +1,2 @@
-pub mod aoss;
+pub mod client;
 mod sigv4;

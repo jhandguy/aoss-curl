@@ -6,7 +6,7 @@ use clap::Parser;
 use hyper::body::to_bytes;
 use hyper::{Method, Request};
 
-use aoss_curl::aoss::curl;
+use aoss_curl::client::request;
 
 #[derive(Parser, Default)]
 #[clap(about = "Send HTTP requests signed with SigV4 to Amazon OpenSearch Service 🔏")]
@@ -66,7 +66,7 @@ async fn main() -> Result<()> {
     .await?;
 
     let builder = Request::builder().uri(&args.uri).method(&args.method);
-    let mut response = curl(&args.region, &credentials, builder, &args.body).await?;
+    let mut response = request(&args.region, &credentials, builder, &args.body).await?;
     println!("{}", response.status());
 
     let body = to_bytes(response.body_mut()).await?;

@@ -7,7 +7,7 @@ use hyper_rustls::HttpsConnectorBuilder;
 use crate::sigv4::get_signed_headers;
 
 /// Send HTTP requests signed with SigV4 to Amazon OpenSearch Service
-pub async fn curl(
+pub async fn request(
     region: &str,
     credentials: &Credentials,
     builder: Builder,
