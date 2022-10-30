@@ -6,11 +6,11 @@
 [![Build](https://img.shields.io/github/workflow/status/jhandguy/aoss-curl/CI/main)](https://github.com/jhandguy/aoss-curl/actions/workflows/ci.yaml)
 [![Release](https://img.shields.io/github/workflow/status/jhandguy/aoss-curl/CD?label=release)](https://github.com/jhandguy/aoss-curl/actions/workflows/cd.yaml)
 
-Send HTTP requests signed with SigV4 to Amazon OpenSearch Service 🔏
+Request to Amazon OpenSearch Service with SigV4 🔏
 
 ```shell
 ➜ aoss-curl -h
-Send HTTP requests signed with SigV4 to Amazon OpenSearch Service 🔏
+Request to Amazon OpenSearch Service with SigV4 🔏
 
 Usage: aoss-curl [OPTIONS] --code <CODE> --uri <URI> <HOME>
 

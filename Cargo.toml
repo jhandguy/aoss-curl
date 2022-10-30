@@ -1,6 +1,6 @@
 [package]
 name = "aoss-curl"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["Jean Mainguy"]
 categories = ["command-line-utilities"]
@@ -9,7 +9,7 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/jhandguy/aoss-curl"
 description = """
-Send HTTP requests signed with SigV4 to Amazon OpenSearch Service 🔏
+Request to Amazon OpenSearch Service with SigV4 🔏
 """
 
 [lib]
