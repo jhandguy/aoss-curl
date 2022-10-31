@@ -65,7 +65,10 @@ async fn main() -> Result<()> {
     )
     .await?;
 
-    let builder = Request::builder().uri(&args.uri).method(&args.method);
+    let builder = Request::builder()
+        .uri(&args.uri)
+        .method(&args.method)
+        .header("Content-Type", "application/json");
     let mut response = request(&args.region, &credentials, builder, &args.body).await?;
     println!("{}", response.status());
 
