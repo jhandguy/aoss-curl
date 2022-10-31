@@ -58,16 +58,8 @@ Run `aoss-curl`:
 aoss-curl -p <profile_name> -c <mfa_code> -u <opensearch_domain>/_cat/indices
 ```
 
-Wait for output:
+Check output:
 ```shell
 200 OK
-...
-```
-
-Check generated credentials in `~/.aws/credentials`:
-```text
-[<profile_name>]
-aws_access_key_id = <aws_access_key_id>
-aws_secret_access_key = <aws_secret_access_key>
-aws_session_token = <aws_session_token>
+green ...
 ```

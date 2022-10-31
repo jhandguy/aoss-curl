@@ -1,6 +1,6 @@
 [package]
 name = "aoss-curl"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 authors = ["Jean Mainguy"]
 categories = ["command-line-utilities"]
