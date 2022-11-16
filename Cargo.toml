@@ -27,6 +27,6 @@ anyhow = "1.0.66"
 aws-mfa = "0.2.3"
 aws-sigv4 = "0.51.0"
 hyper = { version = "0.14.23", features = ["full"] }
-hyper-rustls = { version = "0.23.0", features = ["webpki-tokio"]}
+hyper-rustls = { version = "0.23.1", features = ["webpki-tokio"]}
 clap = { version = "4.0.24", features = ["derive", "env"] }
 tokio = { version = "1.21.2", features = ["full"] }
