@@ -19,7 +19,7 @@ checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
 
 [[package]]
 name = "aoss-curl"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "anyhow",
  "aws-mfa",
@@ -109,9 +109,9 @@ dependencies = [
 
 [[package]]
 name = "aws-mfa"
-version = "0.2.3"
+version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc97b916ad9d8a8fc4fed1801bed6e9962e7c73f551bcd8baa4a92c65a424ccc"
+checksum = "0c0c86936b1e0eaf84102c26a8eeec232287c24a8094b2993f7e74434a85d213"
 dependencies = [
  "anyhow",
  "aws-config",
@@ -371,9 +371,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "clap"
-version = "4.0.24"
+version = "4.0.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "60494cedb60cb47462c0ff7be53de32c0e42a6fc2c772184554fa12bd9489c03"
+checksum = "2148adefda54e14492fb9bddcc600b4344c5d1a3123bd666dcb939c6f0e0e57e"
 dependencies = [
  "atty",
  "bitflags",
@@ -610,9 +610,9 @@ dependencies = [
 
 [[package]]
 name = "hyper-rustls"
-version = "0.23.0"
+version = "0.23.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d87c48c02e0dc5e3b849a2041db3029fd066650f8f717c07bf8ed78ccb895cac"
+checksum = "59df7c4e19c950e6e0e868dcc0a300b09a9b88e9ec55bd879ca819087a77355d"
 dependencies = [
  "http",
  "hyper",
