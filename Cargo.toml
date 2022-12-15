@@ -25,7 +25,7 @@ doc = false
 [dependencies]
 anyhow = "1.0.66"
 aws-mfa = "0.2.9"
-aws-sigv4 = "0.51.0"
+aws-sigv4 = "0.52.0"
 hyper = { version = "0.14.23", features = ["full"] }
 hyper-rustls = { version = "0.23.2", features = ["webpki-tokio"]}
 clap = { version = "4.0.29", features = ["derive", "env"] }
