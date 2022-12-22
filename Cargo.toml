@@ -1,6 +1,6 @@
 [package]
 name = "aoss-curl"
-version = "0.1.14"
+version = "0.1.15"
 edition = "2021"
 authors = ["Jean Mainguy"]
 categories = ["command-line-utilities"]
@@ -8,6 +8,7 @@ keywords = ["aws", "opensearch", "sigv4"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/jhandguy/aoss-curl"
+documentation = "https://docs.rs/aoss-curl"
 description = """
 Request to Amazon OpenSearch Service with SigV4 🔏
 """
@@ -23,10 +24,10 @@ test = false
 doc = false
 
 [dependencies]
-anyhow = "1.0.66"
-aws-mfa = "0.2.9"
-aws-sigv4 = "0.51.0"
+anyhow = "1.0.68"
+aws-mfa = "0.2.10"
+aws-sigv4 = "0.52.0"
 hyper = { version = "0.14.23", features = ["full"] }
 hyper-rustls = { version = "0.23.2", features = ["webpki-tokio"]}
-clap = { version = "4.0.29", features = ["derive", "env"] }
+clap = { version = "4.0.30", features = ["derive", "env"] }
 tokio = { version = "1.23.0", features = ["full"] }

@@ -3,8 +3,8 @@
 [![Version](https://img.shields.io/crates/v/aoss-curl)](https://crates.io/crates/aoss-curl)
 [![Downloads](https://img.shields.io/crates/d/aoss-curl)](https://crates.io/crates/aoss-curl)
 [![License](https://img.shields.io/crates/l/aoss-curl)](LICENSE)
-[![Build](https://img.shields.io/github/workflow/status/jhandguy/aoss-curl/CI/main)](https://github.com/jhandguy/aoss-curl/actions/workflows/ci.yaml)
-[![Release](https://img.shields.io/github/workflow/status/jhandguy/aoss-curl/CD?label=release)](https://github.com/jhandguy/aoss-curl/actions/workflows/cd.yaml)
+[![Build](https://img.shields.io/github/actions/workflow/status/jhandguy/aoss-curl/ci.yaml)](https://github.com/jhandguy/aoss-curl/actions/workflows/ci.yaml)
+[![Release](https://img.shields.io/github/actions/workflow/status/jhandguy/aoss-curl/cd.yaml?label=release)](https://github.com/jhandguy/aoss-curl/actions/workflows/cd.yaml)
 [![Deployment](https://shields.io/github/deployments/jhandguy/aoss-curl/release?label=deployment)](https://github.com/jhandguy/aoss-curl/deployments/activity_log?environment=release)
 
 Request to Amazon OpenSearch Service with SigV4 🔏
