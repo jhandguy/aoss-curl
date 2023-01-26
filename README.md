@@ -38,6 +38,12 @@ Options:
 cargo install aoss-curl
 ```
 
+or via [homebrew-tap](https://github.com/jhandguy/homebrew-tap) with
+
+```shell
+brew install jhandguy/tap/aoss-curl
+```
+
 or downloaded as binary from the [releases page](https://github.com/jhandguy/aoss-curl/releases).
 
 ## Usage
