@@ -1,6 +1,6 @@
 [package]
 name = "aoss-curl"
-version = "0.1.17"
+version = "0.1.18"
 edition = "2021"
 authors = ["Jean Mainguy"]
 categories = ["command-line-utilities"]
@@ -25,8 +25,8 @@ doc = false
 
 [dependencies]
 anyhow = "1.0.68"
-aws-mfa = "0.2.12"
-aws-sigv4 = "0.53.0"
+aws-mfa = "0.2.13"
+aws-sigv4 = "0.54.1"
 hyper = { version = "0.14.23", features = ["full"] }
 hyper-rustls = { version = "0.23.2", features = ["webpki-tokio"]}
 clap = { version = "4.1.4", features = ["derive", "env"] }
