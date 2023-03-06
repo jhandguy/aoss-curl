@@ -9,7 +9,7 @@ use hyper::{Method, Request};
 use aoss_curl::client::request;
 
 #[derive(Parser, Default)]
-#[clap(about = "Request to Amazon OpenSearch Service with SigV4 🔏")]
+#[clap(version, about)]
 pub struct Args {
     /// Name of the AWS region
     #[clap(short, long, default_value = "eu-west-1")]

@@ -26,7 +26,8 @@ Options:
   -m, --method <METHOD>      Method of the HTTP request [default: GET]
   -u, --uri <URI>            URI of the HTTP request
   -b, --body <BODY>          Body of the HTTP request [default: ]
-  -h, --help                 Print help information
+  -h, --help                 Print help
+  -V, --version              Print version
 ```
 
 ## Installation
