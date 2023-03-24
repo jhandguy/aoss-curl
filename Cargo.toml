@@ -22,7 +22,7 @@ test = false
 doc = false
 
 [dependencies]
-anyhow = "1.0.69"
+anyhow = "1.0.70"
 aws-mfa = "0.2.16"
 aws-sigv4 = "0.54.1"
 hyper = { version = "0.14.24", features = ["full"] }
