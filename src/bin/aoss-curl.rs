@@ -1,84 +1,239 @@
 use std::str::{from_utf8, FromStr};
 
+use crate::AwsMfaCmd::{Env, File};
 use anyhow::Result;
-use aws_mfa::auth::authenticate;
-use clap::Parser;
+use aoss_curl::Client;
+use async_trait::async_trait;
+use aws_mfa::{Credentials, CredentialsProvider, EnvCredentialsProvider, FileCredentialsProvider};
+use clap::{Args, Parser, Subcommand};
 use hyper::body::to_bytes;
-use hyper::{Method, Request};
+use hyper::Method;
 
-use aoss_curl::client::request;
+use crate::Cmd::{AwsMfa, NoAuth};
 
-#[derive(Parser, Default)]
-#[clap(version, about)]
-pub struct Args {
-    /// Name of the AWS region
-    #[clap(short, long, default_value = "eu-west-1")]
-    pub region: String,
+#[derive(Parser)]
+#[command(version, about)]
+struct Cli {
+    #[command(subcommand)]
+    cmd: Cmd,
+}
 
-    /// Name of the AWS profile
-    #[clap(short, long, default_value = "default")]
-    pub profile: String,
+#[derive(Subcommand)]
+enum Cmd {
+    /// Request to Amazon OpenSearch Service with SigV4
+    NoAuth(RequestArgs),
 
-    /// Suffix of the original AWS profile
-    #[clap(short, long, default_value = "noauth")]
-    pub suffix: String,
+    /// Request to Amazon OpenSearch Service with SigV4 and aws-mfa
+    AwsMfa(AwsMfaArgs),
+}
 
+#[derive(Args)]
+struct AwsMfaArgs {
+    #[command(subcommand)]
+    cmd: AwsMfaCmd,
+}
+
+#[derive(Subcommand)]
+enum AwsMfaCmd {
+    /// Request to Amazon OpenSearch Service with SigV4 and aws-mfa using config and credentials files
+    File(FileArgs),
+
+    /// Request to Amazon OpenSearch Service with SigV4 and aws-mfa using environment variables
+    Env(EnvArgs),
+}
+
+#[derive(Args)]
+struct AuthArgs {
     /// MFA code
-    #[clap(short, long)]
-    pub code: String,
-
-    /// Session duration in seconds
-    #[clap(short, long, default_value_t = 3600)]
-    pub duration: i32,
+    #[arg(short, long)]
+    code: String,
 
     /// MFA device identifier (defaults to AWS username)
-    #[clap(short, long, default_value = "")]
-    pub identifier: String,
+    #[arg(short, long)]
+    identifier: Option<String>,
+
+    /// Session duration in seconds
+    #[arg(short, long, default_value_t = 3600)]
+    duration: i32,
+}
+
+#[derive(Args)]
+struct FileArgs {
+    #[command(flatten)]
+    auth: AuthArgs,
+
+    #[command(flatten)]
+    request: RequestArgs,
 
     /// Home directory containing the AWS hidden folder
-    #[clap(env)]
-    pub home: String,
+    #[arg(env = "HOME")]
+    home: String,
 
-    /// Method of the HTTP request
-    #[clap(short, long, default_value = "GET", value_parser = parse_method)]
-    pub method: Method,
+    /// Name of the AWS profile
+    #[arg(short, long, default_value = "default", env = "AWS_PROFILE")]
+    profile: String,
+
+    /// Suffix of the original AWS profile
+    #[arg(short, long, default_value = "noauth")]
+    suffix: String,
+
+    /// Force authentication even though current credentials are still valid
+    #[arg(short, long)]
+    force: bool,
+}
+
+#[derive(Args)]
+struct EnvArgs {
+    #[command(flatten)]
+    auth: AuthArgs,
+
+    #[command(flatten)]
+    request: RequestArgs,
+}
+
+#[derive(Args)]
+struct RequestArgs {
+    /// Name of the AWS region
+    #[arg(short, long, env = "AWS_REGION")]
+    region: Option<String>,
 
     /// URI of the HTTP request
-    #[clap(short, long)]
-    pub uri: String,
+    #[arg(short, long)]
+    uri: String,
+
+    /// Method of the HTTP request
+    #[arg(short, long, default_value = "GET", value_parser = parse_method)]
+    method: Method,
 
     /// Body of the HTTP request
-    #[clap(short, long, default_value = "")]
-    pub body: String,
+    #[arg(short, long, default_value = "")]
+    body: String,
 }
 
 fn parse_method(arg: &str) -> Result<Method> {
     Ok(Method::from_str(arg)?)
 }
 
+#[async_trait]
+trait Request {
+    async fn request(&self) -> Result<()>;
+}
+
+impl Cli {
+    fn args(self) -> Box<dyn Request> {
+        match self.cmd {
+            NoAuth(args) => Box::new(args),
+            AwsMfa(args) => match args.cmd {
+                File(args) => Box::new(args),
+                Env(args) => Box::new(args),
+            },
+        }
+    }
+}
+
+#[async_trait]
+impl Request for RequestArgs {
+    async fn request(&self) -> Result<()> {
+        let client = Client::new(
+            &self.uri,
+            &self.method,
+            &self.body,
+            self.region.clone(),
+            None,
+            None,
+        );
+
+        let mut response = client.request(None).await?;
+        println!("{}", response.status());
+
+        let body = to_bytes(response.body_mut()).await?;
+        println!("{}", from_utf8(&body)?);
+
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl Request for FileArgs {
+    async fn request(&self) -> Result<()> {
+        let provider = FileCredentialsProvider::new(
+            &self.auth.code,
+            &self.home,
+            self.request.region.clone(),
+            &self.profile,
+            &self.suffix,
+            self.auth.identifier.clone(),
+            self.auth.duration,
+        );
+
+        let credentials: Credentials;
+        if self.force {
+            credentials = provider.authenticate().await?;
+        } else if let Some(c) = provider.validate().await? {
+            credentials = c;
+        } else {
+            credentials = provider.authenticate().await?;
+        }
+
+        let client = Client::new(
+            &self.request.uri,
+            &self.request.method,
+            &self.request.body,
+            self.request.region.clone(),
+            Some(self.profile.clone()),
+            Some(self.home.clone()),
+        );
+
+        let mut response = client
+            .request(Some(credentials.to_aws_credentials()))
+            .await?;
+        println!("{}", response.status());
+
+        let body = to_bytes(response.body_mut()).await?;
+        println!("{}", from_utf8(&body)?);
+
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl Request for EnvArgs {
+    async fn request(&self) -> Result<()> {
+        let provider = EnvCredentialsProvider::new(
+            &self.auth.code,
+            self.auth.identifier.clone(),
+            self.auth.duration,
+        );
+
+        let credentials: Credentials;
+        if let Some(c) = provider.validate().await? {
+            credentials = c;
+        } else {
+            credentials = provider.authenticate().await?;
+        }
+
+        let client = Client::new(
+            &self.request.uri,
+            &self.request.method,
+            &self.request.body,
+            self.request.region.clone(),
+            None,
+            None,
+        );
+
+        let mut response = client
+            .request(Some(credentials.to_aws_credentials()))
+            .await?;
+        println!("{}", response.status());
+
+        let body = to_bytes(response.body_mut()).await?;
+        println!("{}", from_utf8(&body)?);
+
+        Ok(())
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
-    let args = Args::parse();
-    let credentials = authenticate(
-        &args.profile,
-        &args.suffix,
-        &args.region,
-        &args.code,
-        args.duration,
-        &args.identifier,
-        &args.home,
-    )
-    .await?;
-
-    let builder = Request::builder()
-        .uri(&args.uri)
-        .method(&args.method)
-        .header("Content-Type", "application/json");
-    let mut response = request(&args.region, &credentials, builder, &args.body).await?;
-    println!("{}", response.status());
-
-    let body = to_bytes(response.body_mut()).await?;
-    println!("{}", from_utf8(&body)?);
-
-    Ok(())
+    Cli::parse().args().request().await
 }

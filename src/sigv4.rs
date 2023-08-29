@@ -1,7 +1,9 @@
 use std::time::SystemTime;
 
-use anyhow::{anyhow, Error, Result};
-use aws_mfa::auth::Credentials;
+use crate::error::Error;
+use crate::error::Error::{BuildParamsError, InvalidSignature, SignRequestError};
+use anyhow::Result;
+use aws_credential_types::Credentials;
 use aws_sigv4::http_request::{
     sign, SignableBody, SignableRequest, SigningParams, SigningSettings,
 };
@@ -13,17 +15,21 @@ pub async fn get_signed_headers(
     credentials: &Credentials,
     request: &Request<Body>,
     body: &str,
-) -> Result<HeaderMap> {
+) -> Result<HeaderMap, Error> {
     let now = SystemTime::now();
-    let params = SigningParams::builder()
+    let mut builder = SigningParams::builder()
         .settings(SigningSettings::default())
         .time(now)
         .region(region)
         .service_name(service)
         .access_key(credentials.access_key_id())
-        .secret_key(credentials.secret_access_key())
-        .security_token(credentials.session_token())
-        .build()?;
+        .secret_key(credentials.secret_access_key());
+
+    if let Some(session_token) = credentials.session_token() {
+        builder = builder.security_token(session_token);
+    }
+
+    let params = builder.build().map_err(BuildParamsError)?;
 
     let headers = sign(
         SignableRequest::new(
@@ -34,10 +40,10 @@ pub async fn get_signed_headers(
         ),
         &params,
     )
-    .map_err(Error::msg)?
+    .map_err(SignRequestError)?
     .output()
     .headers()
-    .ok_or_else(|| anyhow!("signed headers missing"))?
+    .ok_or_else(|| InvalidSignature(String::from("headers")))?
     .clone();
 
     Ok(headers)
@@ -46,14 +52,21 @@ pub async fn get_signed_headers(
 #[cfg(test)]
 mod tests {
     use anyhow::{anyhow, Result};
-    use aws_mfa::auth::Credentials;
+    use aws_credential_types::Credentials;
     use hyper::{Body, Request};
+    use std::time::SystemTime;
 
     use crate::sigv4::get_signed_headers;
 
     #[tokio::test]
     async fn test_get_signed_headers() -> Result<()> {
-        let credentials = Credentials::new("access_key_id", "secret_access_key", "session_token");
+        let credentials = Credentials::new(
+            "access_key_id",
+            "secret_access_key",
+            Some(String::from("session_token")),
+            Some(SystemTime::now()),
+            "aoss-curl",
+        );
         let body = "";
         let request = Request::builder()
             .uri("https://opensearch-domain.eu-west-1.es.amazonaws.com/_cat/indices")
@@ -68,9 +81,8 @@ mod tests {
             headers
                 .get("x-amz-security-token")
                 .ok_or_else(|| anyhow!("x-amz-security-token header missing"))?
-                .clone()
                 .to_str()?,
-            credentials.session_token()
+            "session_token"
         );
 
         Ok(())

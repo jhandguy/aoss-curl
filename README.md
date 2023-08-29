@@ -9,26 +9,19 @@
 Request to Amazon OpenSearch Service with SigV4 🔏
 
 ```shell
-➜ aoss-curl -h
+➜ aoss-curl
 Request to Amazon OpenSearch Service with SigV4 🔏
 
-Usage: aoss-curl [OPTIONS] --code <CODE> --uri <URI> <HOME>
+Usage: aoss-curl <COMMAND>
 
-Arguments:
-  <HOME>  Home directory containing the AWS hidden folder [env: HOME=/Users/JohnDoe]
+Commands:
+  no-auth  Request to Amazon OpenSearch Service with SigV4
+  aws-mfa  Request to Amazon OpenSearch Service with SigV4 and aws-mfa
+  help     Print this message or the help of the given subcommand(s)
 
 Options:
-  -r, --region <REGION>          Name of the AWS region [default: eu-west-1]
-  -p, --profile <PROFILE>        Name of the AWS profile [default: default]
-  -s, --suffix <SUFFIX>          Suffix of the original AWS profile [default: noauth]
-  -c, --code <CODE>              MFA code
-  -d, --duration <DURATION>      Session duration in seconds [default: 3600]
-  -i, --identifier <IDENTIFIER>  MFA device identifier (defaults to AWS username) [default: ]
-  -m, --method <METHOD>          Method of the HTTP request [default: GET]
-  -u, --uri <URI>                URI of the HTTP request
-  -b, --body <BODY>              Body of the HTTP request [default: ]
-  -h, --help                     Print help
-  -V, --version                  Print version
+  -h, --help     Print help
+  -V, --version  Print version
 ```
 
 ## Installation
@@ -49,7 +42,28 @@ or downloaded as binary from the [releases page](https://github.com/jhandguy/aos
 
 ## Usage
 
-> **Warning**: aoss-curl requires an MFA code and uses [aws-mfa](https://github.com/jhandguy/aws-mfa) for authenticating to AWS.
+### no-auth
+
+Run the `aoss-curl no-auth` command:
+```shell
+aoss-curl no-auth -u <opensearch_domain>/_cat/indices
+```
+```text
+200 OK
+green ...
+```
+
+### aws-mfa
+
+> [aws-mfa](https://github.com/jhandguy/aws-mfa) can be used for authenticating to AWS with MFA before requesting to Amazon OpenSearch Service.
+
+#### Config and credentials files
+
+Add default region in `~/.aws/config`:
+```text
+[<profile_name>]
+region = <aws_region>
+```
 
 Add basic credentials in `~/.aws/credentials`:
 
@@ -61,13 +75,30 @@ aws_secret_access_key = <aws_secret_access_key>
 
 > **Note**: make sure to add the `-noauth` suffix to the profile name
 
-Run `aoss-curl`:
+Run the `aoss-curl aws-mfa file` command:
 ```shell
-aoss-curl -p <profile_name> -c <mfa_code> -u <opensearch_domain>/_cat/indices
+aoss-curl aws-mfa file -p <profile_name> -c <mfa_code> -u <opensearch_domain>/_cat/indices
+```
+```text
+200 OK
+green ...
 ```
 
-Check output:
+#### Environment variables
+
+Export default region and basic credentials as environment variables:
+
 ```shell
+export AWS_REGION=<aws_region>
+export AWS_ACCESS_KEY_ID=<aws_access_key_id>
+export AWS_SECRET_ACCESS_KEY=<aws_secret_access_key>
+```
+
+Run the `aoss-curl aws-mfa env` command:
+```shell
+aoss-curl aws-mfa env -c <mfa_code> -u <opensearch_domain>/_cat/indices
+```
+```text
 200 OK
 green ...
 ```
