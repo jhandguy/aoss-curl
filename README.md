@@ -55,7 +55,7 @@ green ...
 
 ### aws-mfa
 
-> [aws-mfa](https://github.com/jhandguy/aws-mfa) can be used for authenticating to AWS with MFA before requesting to Amazon OpenSearch Service.
+[aws-mfa](https://github.com/jhandguy/aws-mfa) can be used for authenticating to AWS with MFA before requesting to Amazon OpenSearch Service.
 
 #### Config and credentials files
 
