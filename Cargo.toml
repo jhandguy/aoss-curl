@@ -1,6 +1,6 @@
 [package]
 name = "aoss-curl"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2021"
 authors = ["Jean Mainguy"]
 categories = ["command-line-utilities"]
@@ -33,7 +33,7 @@ anyhow = "1.0.75"
 async-trait = "0.1.73"
 aws-config = "0.56.1"
 aws-credential-types = "0.56.1"
-aws-mfa = "1.0.0"
+aws-mfa = "1.0.2"
 aws-sigv4 = "0.56.1"
 hyper = { version = "0.14.27", features = ["full"] }
 hyper-rustls = { version = "0.24.1", features = ["webpki-tokio"]}
