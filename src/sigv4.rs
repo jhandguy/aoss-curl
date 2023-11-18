@@ -1,88 +1,130 @@
 use std::time::SystemTime;
 
 use crate::error::Error;
-use crate::error::Error::{BuildParamsError, InvalidSignature, SignRequestError};
+use crate::error::Error::{BuildParamsError, ConvertHeaderValueError, SignRequestError};
 use anyhow::Result;
 use aws_credential_types::Credentials;
-use aws_sigv4::http_request::{
-    sign, SignableBody, SignableRequest, SigningParams, SigningSettings,
-};
-use hyper::{Body, HeaderMap, Request};
+use aws_sigv4::http_request::{sign, SignableBody, SignableRequest, SigningSettings};
+use aws_sigv4::sign::v4a::SigningParams;
+use aws_smithy_runtime_api::client::identity::Identity;
+use hyper::header::ToStrError;
+use hyper::Request;
 
-pub async fn get_signed_headers(
+pub async fn sign_request(
+    time: SystemTime,
     region: &str,
     service: &str,
-    credentials: &Credentials,
-    request: &Request<Body>,
-    body: &str,
-) -> Result<HeaderMap, Error> {
-    let now = SystemTime::now();
-    let mut builder = SigningParams::builder()
+    credentials: Credentials,
+    request: &mut Request<String>,
+) -> Result<(), Error> {
+    let identity = Identity::from(credentials);
+
+    let params = SigningParams::builder()
         .settings(SigningSettings::default())
-        .time(now)
-        .region(region)
-        .service_name(service)
-        .access_key(credentials.access_key_id())
-        .secret_key(credentials.secret_access_key());
+        .time(time)
+        .region_set(region)
+        .name(service)
+        .identity(&identity)
+        .build()
+        .map_err(BuildParamsError)?
+        .into();
 
-    if let Some(session_token) = credentials.session_token() {
-        builder = builder.security_token(session_token);
-    }
+    let headers = request
+        .headers()
+        .iter()
+        .map(|(n, v)| Ok((n.as_str(), v.to_str()?)))
+        .collect::<Result<Vec<(&str, &str)>, ToStrError>>()
+        .map_err(ConvertHeaderValueError)?
+        .into_iter();
 
-    let params = builder.build().map_err(BuildParamsError)?;
-
-    let headers = sign(
-        SignableRequest::new(
-            request.method(),
-            request.uri(),
-            request.headers(),
-            SignableBody::Bytes(body.as_bytes()),
-        ),
-        &params,
+    let sign_request = SignableRequest::new(
+        request.method().as_str(),
+        request.uri().to_string(),
+        headers,
+        SignableBody::Bytes(request.body().as_bytes()),
     )
-    .map_err(SignRequestError)?
-    .output()
-    .headers()
-    .ok_or_else(|| InvalidSignature(String::from("headers")))?
-    .clone();
+    .map_err(SignRequestError)?;
 
-    Ok(headers)
+    let (instructions, _) = sign(sign_request, &params)
+        .map_err(SignRequestError)?
+        .into_parts();
+
+    instructions.apply_to_request_http0x(request);
+
+    Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use anyhow::{anyhow, Result};
     use aws_credential_types::Credentials;
-    use hyper::{Body, Request};
+    use hyper::Request;
+    use std::ops::Add;
     use std::time::SystemTime;
+    use time::format_description::parse;
+    use time::{Duration, OffsetDateTime};
 
-    use crate::sigv4::get_signed_headers;
+    use crate::sigv4::sign_request;
 
     #[tokio::test]
     async fn test_get_signed_headers() -> Result<()> {
+        let time = SystemTime::now();
+        let region = "eu-west-1";
+        let service = "es";
+        let access_key_id = "access_key_id";
+        let secret_access_key = "secret_access_key";
+        let session_token = "session_token";
         let credentials = Credentials::new(
-            "access_key_id",
-            "secret_access_key",
-            Some(String::from("session_token")),
-            Some(SystemTime::now()),
+            access_key_id,
+            secret_access_key,
+            Some(String::from(session_token)),
+            Some(time.add(Duration::hours(1))),
             "aoss-curl",
         );
-        let body = "";
-        let request = Request::builder()
+        let mut request = Request::builder()
             .uri("https://opensearch-domain.eu-west-1.es.amazonaws.com/_cat/indices")
             .method("GET")
-            .body(Body::from(String::from(body)))?;
-        let headers = get_signed_headers("eu-west-1", "es", &credentials, &request, body).await?;
+            .body(String::from(""))?;
+        sign_request(time, region, service, credentials, &mut request).await?;
 
-        assert_eq!(headers.len(), 3);
-        assert!(headers.get("x-amz-date").is_some());
-        assert!(headers.get("authorization").is_some());
+        let headers = request.headers();
+        let datetime = OffsetDateTime::from(time);
+        let mut format = parse("[year][month][day]T[hour][minute][second]Z")?;
+        assert_eq!(headers.len(), 4);
+        assert_eq!(
+            headers
+                .get("x-amz-date")
+                .ok_or_else(|| anyhow!("x-amz-date header missing"))?
+                .to_str()?,
+            datetime.format(&format)?
+        );
+        assert_eq!(
+            headers
+                .get("x-amz-region-set")
+                .ok_or_else(|| anyhow!("x-amz-region-set header missing"))?
+                .to_str()?,
+            region
+        );
+        format = parse("[year][month][day]")?;
+        assert!(headers
+            .get("authorization")
+            .ok_or_else(|| anyhow!("authorization header missing"))?
+            .to_str()?
+            .contains(
+                format!(
+                    "Credential={}/{}/{}/aws4_request",
+                    access_key_id,
+                    datetime.format(&format)?,
+                    service
+                )
+                .as_str()
+            ));
         assert_eq!(
             headers
                 .get("x-amz-security-token")
                 .ok_or_else(|| anyhow!("x-amz-security-token header missing"))?
                 .to_str()?,
-            "session_token"
+            session_token
         );
 
         Ok(())

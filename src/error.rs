@@ -1,6 +1,7 @@
 use aws_credential_types::provider::error::CredentialsError;
 use aws_sigv4::http_request::SigningError;
-use aws_sigv4::signing_params::BuildError;
+use aws_sigv4::sign::v4a::signing_params::BuildError;
+use hyper::header::ToStrError;
 use hyper::http;
 use thiserror::Error;
 
@@ -15,8 +16,8 @@ pub enum Error {
     #[error("failed to sign request")]
     SignRequestError(#[source] SigningError),
 
-    #[error("missing field `{0}` in signature output")]
-    InvalidSignature(String),
+    #[error("failed to convert http header value to string")]
+    ConvertHeaderValueError(#[source] ToStrError),
 
     #[error("failed to build http request")]
     BuildRequestError(#[source] http::Error),
