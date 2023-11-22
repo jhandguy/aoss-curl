@@ -31,11 +31,11 @@ panic = "abort"
 [dependencies]
 anyhow = "1.0.75"
 async-trait = "0.1.74"
-aws-config = "0.101.0"
-aws-credential-types = "0.101.0"
+aws-config = "1.0.0"
+aws-credential-types = "1.0.0"
 aws-mfa = "1.0.7"
-aws-sigv4 = { version = "0.101.0", features = ["sigv4a", "http0-compat"] }
-aws-smithy-runtime-api = "0.101.0"
+aws-sigv4 = { version = "1.0.0", features = ["sigv4a", "http0-compat"] }
+aws-smithy-runtime-api = "1.0.1"
 hyper = { version = "0.14.27", features = ["full"] }
 hyper-rustls = { version = "0.24.2", features = ["webpki-tokio"]}
 clap = { version = "4.4.8", features = ["derive", "env"] }
