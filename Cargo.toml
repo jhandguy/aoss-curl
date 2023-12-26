@@ -39,7 +39,7 @@ aws-smithy-runtime-api = "1.1.1"
 hyper = { version = "0.14.28", features = ["full"] }
 hyper-rustls = { version = "0.24.2", features = ["webpki-tokio"]}
 clap = { version = "4.4.11", features = ["derive", "env"] }
-thiserror = "1.0.51"
+thiserror = "1.0.52"
 tokio = { version = "1.35.1", features = ["full"] }
 
 [dev-dependencies]
