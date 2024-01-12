@@ -1,6 +1,6 @@
 [package]
 name = "aoss-curl"
-version = "1.0.10"
+version = "1.0.11"
 edition = "2021"
 authors = ["Jean Mainguy"]
 categories = ["command-line-utilities"]
@@ -33,7 +33,7 @@ anyhow = "1.0.79"
 async-trait = "0.1.77"
 aws-config = "1.1.2"
 aws-credential-types = "1.1.2"
-aws-mfa = "1.0.10"
+aws-mfa = "1.0.11"
 aws-sigv4 = { version = "1.1.2", features = ["sigv4a", "http0-compat"] }
 aws-smithy-runtime-api = "1.1.2"
 hyper = { version = "0.14.28", features = ["full"] }

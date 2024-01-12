@@ -12,9 +12,13 @@ updates:
       aws:
         patterns:
           - "aws*"
+      hyper:
+        patterns:
+          - "hyper*"
       patch-minor:
         update-types:
           - "patch"
           - "minor"
         exclude-patterns:
           - "aws*"
+          - "hyper*"
