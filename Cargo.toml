@@ -31,7 +31,7 @@ panic = "abort"
 [dependencies]
 anyhow = "1.0.80"
 async-trait = "0.1.77"
-aws-config = "1.1.4"
+aws-config = "1.1.6"
 aws-credential-types = "1.1.2"
 aws-mfa = "1.0.11"
 aws-sigv4 = { version = "1.1.2", features = ["sigv4a", "http0-compat"] }
