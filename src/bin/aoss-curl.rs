@@ -6,7 +6,8 @@ use aoss_curl::Client;
 use async_trait::async_trait;
 use aws_mfa::{Credentials, CredentialsProvider, EnvCredentialsProvider, FileCredentialsProvider};
 use clap::{Args, Parser, Subcommand};
-use hyper::body::to_bytes;
+use http_body_util::BodyExt;
+use hyper::body::Buf;
 use hyper::Method;
 
 use crate::Cmd::{AwsMfa, NoAuth};
@@ -143,11 +144,10 @@ impl Request for RequestArgs {
             None,
         );
 
-        let mut response = client.request(None).await?;
+        let response = client.request(None).await?;
         println!("{}", response.status());
-
-        let body = to_bytes(response.body_mut()).await?;
-        println!("{}", from_utf8(&body)?);
+        let bytes = response.collect().await?.to_bytes();
+        println!("{}", from_utf8(bytes.chunk())?);
 
         Ok(())
     }
@@ -184,13 +184,12 @@ impl Request for FileArgs {
             Some(self.home.clone()),
         );
 
-        let mut response = client
+        let response = client
             .request(Some(credentials.to_aws_credentials()))
             .await?;
         println!("{}", response.status());
-
-        let body = to_bytes(response.body_mut()).await?;
-        println!("{}", from_utf8(&body)?);
+        let bytes = response.collect().await?.to_bytes();
+        println!("{}", from_utf8(bytes.chunk())?);
 
         Ok(())
     }
@@ -221,13 +220,12 @@ impl Request for EnvArgs {
             None,
         );
 
-        let mut response = client
+        let response = client
             .request(Some(credentials.to_aws_credentials()))
             .await?;
         println!("{}", response.status());
-
-        let body = to_bytes(response.body_mut()).await?;
-        println!("{}", from_utf8(&body)?);
+        let bytes = response.collect().await?.to_bytes();
+        println!("{}", from_utf8(bytes.chunk())?);
 
         Ok(())
     }

@@ -23,7 +23,10 @@ pub enum Error {
     BuildRequestError(#[source] http::Error),
 
     #[error("failed to send http request")]
-    SendRequestError(#[source] hyper::Error),
+    SendRequestError(#[source] hyper_util::client::legacy::Error),
+
+    #[error("failed to read http response")]
+    ReadResponseError(#[source] hyper::Error),
 
     #[error(transparent)]
     Other(#[from] anyhow::Error),

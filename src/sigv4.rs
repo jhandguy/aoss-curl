@@ -49,7 +49,7 @@ pub async fn sign_request(
         .map_err(SignRequestError)?
         .into_parts();
 
-    instructions.apply_to_request_http0x(request);
+    instructions.apply_to_request_http1x(request);
 
     Ok(())
 }
