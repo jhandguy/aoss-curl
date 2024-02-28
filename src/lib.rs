@@ -1,12 +1,17 @@
 use anyhow::Result;
 use aws_credential_types::Credentials;
-use hyper::{Body, Method, Request, Response};
+use http_body_util::combinators::BoxBody;
+use http_body_util::BodyExt;
+use hyper::body::Bytes;
+use hyper::{Method, Request, Response};
 use hyper_rustls::HttpsConnectorBuilder;
+use hyper_util::client::legacy;
+use hyper_util::rt::TokioExecutor;
 use std::time::SystemTime;
 
 use crate::config::{get_default_credentials, get_default_region};
 use crate::error::Error;
-use crate::error::Error::{BuildRequestError, SendRequestError};
+use crate::error::Error::{BuildRequestError, ReadResponseError, SendRequestError};
 use crate::sigv4::sign_request;
 
 mod config;
@@ -43,7 +48,10 @@ impl Client {
     }
 
     /// Request to Amazon OpenSearch Service with SigV4
-    pub async fn request(&self, credentials: Option<Credentials>) -> Result<Response<Body>, Error> {
+    pub async fn request(
+        &self,
+        credentials: Option<Credentials>,
+    ) -> Result<Response<BoxBody<Bytes, Error>>, Error> {
         let credentials = match credentials {
             Some(r) => r,
             None => get_default_credentials().await?,
@@ -69,11 +77,12 @@ impl Client {
             .enable_http1()
             .build();
 
-        let response = hyper::Client::builder()
+        let response = legacy::Client::builder(TokioExecutor::new())
             .build(connector)
             .request(request)
             .await
-            .map_err(SendRequestError)?;
+            .map_err(SendRequestError)?
+            .map(|i| i.map_err(ReadResponseError).boxed());
 
         Ok(response)
     }
