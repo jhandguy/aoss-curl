@@ -5,7 +5,7 @@ use http_body_util::BodyExt;
 use hyper::body::Bytes;
 use hyper::{Method, Request, Response};
 use hyper_rustls::HttpsConnectorBuilder;
-use hyper_util::client::legacy;
+use hyper_util::client::legacy::Client as HttpClient;
 use hyper_util::rt::TokioExecutor;
 use std::time::SystemTime;
 
@@ -77,7 +77,7 @@ impl Client {
             .enable_http1()
             .build();
 
-        let response = legacy::Client::builder(TokioExecutor::new())
+        let response = HttpClient::builder(TokioExecutor::new())
             .build(connector)
             .request(request)
             .await
