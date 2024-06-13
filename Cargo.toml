@@ -31,10 +31,10 @@ panic = "abort"
 [dependencies]
 anyhow = "1.0.86"
 async-trait = "0.1.80"
-aws-config = "1.5.0"
+aws-config = "1.5.1"
 aws-credential-types = "1.2.0"
 aws-mfa = "1.0.15"
-aws-runtime = "1.2.2"
+aws-runtime = "1.2.3"
 aws-sigv4 = { version = "1.2.1", features = ["sigv4a"] }
 aws-smithy-runtime-api = "1.6.1"
 clap = { version = "4.5.7", features = ["derive", "env"] }
