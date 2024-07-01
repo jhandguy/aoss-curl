@@ -37,7 +37,7 @@ aws-mfa = "1.0.15"
 aws-runtime = "1.3.0"
 aws-sigv4 = { version = "1.2.2", features = ["sigv4a"] }
 aws-smithy-runtime-api = "1.7.0"
-clap = { version = "4.5.7", features = ["derive", "env"] }
+clap = { version = "4.5.8", features = ["derive", "env"] }
 http-body-util = "0.1.2"
 hyper = { version = "1.3.1", features = ["full"] }
 hyper-rustls = { version = "0.27.2", features = ["webpki-tokio"]}
