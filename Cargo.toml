@@ -42,8 +42,8 @@ http-body-util = "=0.1.2"
 hyper = { version = "=1.4.1", features = ["full"] }
 hyper-rustls = { version = "=0.27.2", features = ["webpki-tokio"]}
 hyper-util = { version = "=0.1.6", features = ["full"] }
-thiserror = "=1.0.61"
-tokio = { version = "=1.38.0", features = ["full"] }
+thiserror = "=1.0.63"
+tokio = { version = "=1.38.1", features = ["full"] }
 
 [dev-dependencies]
 time = { version = "=0.3.36", features = ["formatting"] }
