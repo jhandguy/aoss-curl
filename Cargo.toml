@@ -43,7 +43,7 @@ hyper = { version = "=1.4.1", features = ["full"] }
 hyper-rustls = { version = "=0.27.2", features = ["webpki-tokio"]}
 hyper-util = { version = "=0.1.6", features = ["full"] }
 thiserror = "=1.0.63"
-tokio = { version = "=1.39.1", features = ["full"] }
+tokio = { version = "=1.39.2", features = ["full"] }
 
 [dev-dependencies]
 time = { version = "=0.3.36", features = ["formatting"] }
