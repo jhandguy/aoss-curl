@@ -1,6 +1,6 @@
 [package]
 name = "aoss-curl"
-version = "1.0.18"
+version = "1.0.19"
 edition = "2021"
 authors = ["Jean Mainguy"]
 categories = ["command-line-utilities"]
@@ -29,11 +29,11 @@ codegen-units = 1
 panic = "abort"
 
 [dependencies]
-anyhow = "=1.0.89"
+anyhow = "=1.0.91"
 async-trait = "=0.1.83"
 aws-config = "=1.5.8"
 aws-credential-types = "=1.2.1"
-aws-mfa = "=1.0.18"
+aws-mfa = "=1.0.19"
 aws-runtime = "=1.4.3"
 aws-sigv4 = { version = "=1.2.4", features = ["sigv4a"] }
 aws-smithy-runtime-api = "=1.7.2"
@@ -42,8 +42,8 @@ http-body-util = "=0.1.2"
 hyper = { version = "=1.5.0", features = ["full"] }
 hyper-rustls = { version = "=0.27.3", features = ["webpki-tokio"]}
 hyper-util = { version = "=0.1.9", features = ["full"] }
-thiserror = "=1.0.64"
-tokio = { version = "=1.40.0", features = ["full"] }
+thiserror = "=1.0.65"
+tokio = { version = "=1.41.0", features = ["full"] }
 
 [dev-dependencies]
 time = { version = "=0.3.36", features = ["formatting"] }
