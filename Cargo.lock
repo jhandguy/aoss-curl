@@ -197,9 +197,9 @@ dependencies = [
 
 [[package]]
 name = "aws-mfa"
-version = "1.0.19"
+version = "1.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f341b3bf51007a97dd1ba8bc46ac507d3fbadb613d688b4c86bdbe38d62660ee"
+checksum = "d59ba7b2df9ab9c213d22a231fb65137c0596d194987b976b5e5836517ac6f1d"
 dependencies = [
  "anyhow",
  "async-trait",
