@@ -98,7 +98,7 @@ dependencies = [
  "hyper 1.5.1",
  "hyper-rustls 0.27.3",
  "hyper-util",
- "thiserror 2.0.4",
+ "thiserror",
  "time",
  "tokio",
 ]
@@ -197,9 +197,9 @@ dependencies = [
 
 [[package]]
 name = "aws-mfa"
-version = "1.0.20"
+version = "1.0.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d59ba7b2df9ab9c213d22a231fb65137c0596d194987b976b5e5836517ac6f1d"
+checksum = "6d02ba31f85750015c12feee72c8678062623ae8b9010668588e7e742d2d34e7"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -209,7 +209,7 @@ dependencies = [
  "aws-sdk-sts",
  "aws-smithy-runtime-api",
  "clap",
- "thiserror 1.0.69",
+ "thiserror",
  "time",
  "tokio",
 ]
@@ -1896,31 +1896,11 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.69"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6aaf5339b578ea85b50e080feb250a3e8ae8cfcdff9a461c9ec2904bc923f52"
-dependencies = [
- "thiserror-impl 1.0.69",
-]
-
-[[package]]
-name = "thiserror"
 version = "2.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2f49a1853cf82743e3b7950f77e0f4d622ca36cf4317cba00c767838bac8d490"
 dependencies = [
- "thiserror-impl 2.0.4",
-]
-
-[[package]]
-name = "thiserror-impl"
-version = "1.0.69"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fee6c4efc90059e10f81e6d42c60a18f76588c3d74cb83a0b242a2b6c7504c1"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
+ "thiserror-impl",
 ]
 
 [[package]]
